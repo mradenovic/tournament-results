@@ -25,3 +25,17 @@ CREATE TABLE matches(
  winner int references players (id),
  loser int  references players (id)
 );
+
+-- Create view 'standings'
+CREATE OR REPLACE VIEW standings AS
+  SELECT p.id,
+         p.name,
+         count(mw.winner) AS wins,
+         count(ml.loser) + count(mw.winner) AS matches
+    FROM players AS p
+      LEFT JOIN matches AS mw
+      ON p.id = mw.winner
+      LEFT JOIN matches AS ml
+      ON p.id = ml.loser
+    GROUP BY p.id
+    ORDER BY wins DESC, matches ASC;
